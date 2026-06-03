@@ -63,3 +63,29 @@ export const getCallStats = async (req, res, next) => {
     next(error);
   }
 };
+
+// POST /calls/log
+export const createCallLog = async (req, res, next) => {
+  try {
+    const { callerPhone, callerName, status } = req.body;
+    const log = await CallLog.create({
+      userId: req.userId,
+      callerPhone,
+      callerName: callerName || 'Unknown',
+      status: status || 'blocked',
+    });
+    
+    // Emit via Socket.io if available
+    if (req.app.get('io')) {
+      req.app.get('io').to(`user:${req.userId}`).emit('callBlocked', log);
+    }
+
+    res.status(201).json({
+      success: true,
+      data: log,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
