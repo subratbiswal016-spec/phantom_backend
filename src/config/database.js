@@ -3,15 +3,18 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
+  isDev ? 'phantom_dev' : process.env.DB_NAME,
+  isDev ? 'user' : process.env.DB_USER,
+  isDev ? 'password' : process.env.DB_PASSWORD,
   {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT || 5432,
-    dialect: 'postgres',
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    host: isDev ? 'localhost' : process.env.DB_HOST,
+    port: isDev ? 5432 : (process.env.DB_PORT || 5432),
+    dialect: isDev ? 'sqlite' : 'postgres',
+    storage: isDev ? 'phantom_dev.sqlite' : undefined,
+    logging: false,
     pool: {
       max: 10,
       min: 2,

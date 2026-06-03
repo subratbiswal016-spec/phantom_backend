@@ -21,6 +21,14 @@ export const getSchedules = async (req, res, next) => {
 export const createSchedule = async (req, res, next) => {
   try {
     const { label, daysOfWeek, startTime, endTime } = req.body;
+    const user = req.user;
+
+    if (user.plan === 'free') {
+      return res.status(403).json({
+        success: false,
+        message: 'Scheduling is not available on the Free plan. Please upgrade to Basic or higher.',
+      });
+    }
 
     const schedule = await Schedule.create({
       userId: req.userId,

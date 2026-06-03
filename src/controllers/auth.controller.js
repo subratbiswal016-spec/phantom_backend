@@ -66,6 +66,8 @@ export const verifyOtp = async (req, res, next) => {
           plan: user.plan,
           isInvisible: user.isInvisible,
           virtualNumber: user.virtualNumber,
+          pushNotifications: user.pushNotifications,
+          blockedCallAlerts: user.blockedCallAlerts,
         },
       },
     });
@@ -90,6 +92,8 @@ export const getMe = async (req, res, next) => {
         virtualNumber: user.virtualNumber,
         customMessage: user.customMessage,
         blockUnknown: user.blockUnknown,
+        pushNotifications: user.pushNotifications,
+        blockedCallAlerts: user.blockedCallAlerts,
       },
     });
   } catch (error) {

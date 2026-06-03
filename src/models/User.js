@@ -53,6 +53,16 @@ const User = sequelize.define('User', {
     allowNull: true,
     field: 'fcm_token',
   },
+  pushNotifications: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+    field: 'push_notifications',
+  },
+  blockedCallAlerts: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    field: 'blocked_call_alerts',
+  },
 }, {
   tableName: 'users',
   indexes: [
