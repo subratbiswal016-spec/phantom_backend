@@ -38,7 +38,7 @@ if (isProduction && process.env.DATABASE_URL) {
 export const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log('✅ PostgreSQL connected successfully');
+    console.log(`✅ Database connected successfully (${sequelize.getDialect()})`);
     
     // Sync all models in development
     if (process.env.NODE_ENV === 'development') {
