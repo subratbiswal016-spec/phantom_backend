@@ -5,7 +5,9 @@ import { getRedis } from '../config/redis.js';
 export const toggleBlockUnknown = async (req, res, next) => {
   try {
     const user = req.user;
-    const newState = !user.blockUnknown;
+    // If block_unknown is provided in body, use it. Otherwise, toggle it.
+    const requestedState = req.body.block_unknown;
+    const newState = requestedState !== undefined ? requestedState : !user.blockUnknown;
 
     await user.update({ blockUnknown: newState });
 

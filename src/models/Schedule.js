@@ -19,7 +19,7 @@ const Schedule = sequelize.define('Schedule', {
     allowNull: true,
   },
   daysOfWeek: {
-    type: DataTypes.ARRAY(DataTypes.INTEGER),
+    type: DataTypes.JSON,
     allowNull: false,
     field: 'days_of_week',
     comment: '1=Mon, 7=Sun',
