@@ -27,8 +27,6 @@ export const startSchedulerService = () => {
         s.daysOfWeek && s.daysOfWeek.includes(currentDay)
       );
 
-      const schedules = allSchedules.filter(s => s.daysOfWeek && s.daysOfWeek.includes(currentDay));
-
       for (const schedule of schedules) {
         const shouldBeInvisible = isTimeInRange(
           currentTime,
