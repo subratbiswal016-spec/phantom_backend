@@ -77,3 +77,35 @@ export const syncContacts = async (req, res, next) => {
     next(error);
   }
 };
+
+// POST /settings/notifications/push/toggle
+export const togglePushNotifications = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const newState = !user.pushNotifications;
+    await user.update({ pushNotifications: newState });
+    res.status(200).json({
+      success: true,
+      message: newState ? 'Push notifications enabled' : 'Push notifications disabled',
+      data: { pushNotifications: newState },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /settings/notifications/alerts/toggle
+export const toggleBlockedCallAlerts = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const newState = !user.blockedCallAlerts;
+    await user.update({ blockedCallAlerts: newState });
+    res.status(200).json({
+      success: true,
+      message: newState ? 'Blocked call alerts enabled' : 'Blocked call alerts disabled',
+      data: { blockedCallAlerts: newState },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

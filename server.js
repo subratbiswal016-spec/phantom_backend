@@ -19,6 +19,7 @@ import callsRoutes from './src/routes/calls.routes.js';
 import scheduleRoutes from './src/routes/schedule.routes.js';
 import webhookRoutes from './src/routes/webhook.routes.js';
 import settingsRoutes from './src/routes/settings.routes.js';
+import subscriptionRoutes from './src/routes/subscription.routes.js';
 
 dotenv.config();
 
@@ -88,6 +89,7 @@ app.use('/api/calls', callsRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/webhook', webhookRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/subscription', subscriptionRoutes);
 
 // ============= ERROR HANDLER =============
 app.use((err, req, res, next) => {

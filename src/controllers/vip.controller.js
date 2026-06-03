@@ -23,6 +23,22 @@ export const getVipList = async (req, res, next) => {
 export const addVip = async (req, res, next) => {
   try {
     const { name, phone } = req.body;
+    const user = req.user;
+
+    // Enforce Plan Limits
+    const vipCount = await VipContact.count({ where: { user_id: user.id } });
+    if (user.plan === 'free' && vipCount >= 3) {
+      return res.status(403).json({
+        success: false,
+        message: 'Free plan limit reached (3 VIPs). Please upgrade to add more.',
+      });
+    }
+    if (user.plan === 'basic' && vipCount >= 10) {
+      return res.status(403).json({
+        success: false,
+        message: 'Basic plan limit reached (10 VIPs). Please upgrade to PRO.',
+      });
+    }
 
     // Check if already exists
     const existing = await VipContact.findOne({

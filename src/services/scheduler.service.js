@@ -14,11 +14,18 @@ export const startSchedulerService = () => {
       const currentDay = now.getDay() || 7; // Convert 0 (Sun) to 7
       const currentTime = `${now.getHours().toString().padLeft(2, '0')}:${now.getMinutes().toString().padLeft(2, '0')}`;
 
-      // Find all active schedules (filter days in JS for SQLite compatibility)
-      const allSchedules = await Schedule.findAll({
-        where: { isActive: true },
+
+      // Find all active schedules and filter in memory to support both Postgres and SQLite
+      const activeSchedules = await Schedule.findAll({
+        where: {
+          isActive: true,
+        },
         include: [{ model: User, as: 'user' }],
       });
+      
+      const schedules = activeSchedules.filter(s => 
+        s.daysOfWeek && s.daysOfWeek.includes(currentDay)
+      );
 
       const schedules = allSchedules.filter(s => s.daysOfWeek && s.daysOfWeek.includes(currentDay));
 

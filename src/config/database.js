@@ -3,12 +3,27 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Determine dialect (default to sqlite for local dev without Docker)
-const dialect = process.env.DB_DIALECT || 'sqlite';
-
+const isProduction = process.env.NODE_ENV === 'production';
 let sequelize;
 
-if (dialect === 'sqlite') {
+if (isProduction && process.env.DATABASE_URL) {
+  // Production PostgreSQL connection (Render default connection string)
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+    logging: false,
+    define: {
+      timestamps: true,
+      underscored: true,
+    },
+  });
+} else {
+  // Local SQLite connection for development
   sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: './phantom_dev.sqlite',
@@ -18,28 +33,6 @@ if (dialect === 'sqlite') {
       underscored: true,
     },
   });
-} else {
-  sequelize = new Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
-    {
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 5432,
-      dialect: 'postgres',
-      logging: process.env.NODE_ENV === 'development' ? console.log : false,
-      pool: {
-        max: 10,
-        min: 2,
-        acquire: 30000,
-        idle: 10000,
-      },
-      define: {
-        timestamps: true,
-        underscored: true,
-      },
-    }
-  );
 }
 
 export const connectDB = async () => {
