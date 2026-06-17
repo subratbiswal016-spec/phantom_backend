@@ -7,7 +7,7 @@ export const getCallLog = async (req, res, next) => {
     const { page = 1, limit = 20, status } = req.query;
     const offset = (page - 1) * limit;
 
-    const where = { user_id: req.userId };
+    const where = { userId: req.userId };
     if (status) where.status = status;
 
     const { count, rows } = await CallLog.findAndCountAll({
@@ -39,11 +39,11 @@ export const getCallStats = async (req, res, next) => {
     today.setHours(0, 0, 0, 0);
 
     const [totalBlocked, totalForwarded, blockedToday] = await Promise.all([
-      CallLog.count({ where: { user_id: req.userId, status: 'blocked' } }),
-      CallLog.count({ where: { user_id: req.userId, status: 'forwarded' } }),
+      CallLog.count({ where: { userId: req.userId, status: 'blocked' } }),
+      CallLog.count({ where: { userId: req.userId, status: 'forwarded' } }),
       CallLog.count({
         where: {
-          user_id: req.userId,
+          userId: req.userId,
           status: 'blocked',
           created_at: { [Op.gte]: today },
         },

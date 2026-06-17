@@ -12,7 +12,7 @@ export const checkVipLimit = async (req, res, next) => {
     
     // Count existing VIPs
     const { VipContact } = await import('../models/index.js');
-    const vipCount = await VipContact.count({ where: { user_id: user.id } });
+    const vipCount = await VipContact.count({ where: { userId: user.id } });
 
     if (vipCount >= limits.maxVips) {
       return res.status(403).json({
