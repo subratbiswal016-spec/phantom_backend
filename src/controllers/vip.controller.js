@@ -5,7 +5,7 @@ import { getRedis } from '../config/redis.js';
 export const getVipList = async (req, res, next) => {
   try {
     const contacts = await VipContact.findAll({
-      where: { user_id: req.userId },
+      where: { userId: req.userId },
       order: [['created_at', 'DESC']],
     });
 
@@ -26,11 +26,11 @@ export const addVip = async (req, res, next) => {
     const user = req.user;
 
     // Enforce Plan Limits
-    const vipCount = await VipContact.count({ where: { user_id: user.id } });
-    if (user.plan === 'free' && vipCount >= 3) {
+    const vipCount = await VipContact.count({ where: { userId: user.id } });
+    if (user.plan === 'free' && vipCount >= 1) {
       return res.status(403).json({
         success: false,
-        message: 'Free plan limit reached (3 VIPs). Please upgrade to add more.',
+        message: 'Free plan limit reached (1 VIP). Please upgrade to add more.',
       });
     }
     if (user.plan === 'basic' && vipCount >= 10) {
@@ -42,7 +42,7 @@ export const addVip = async (req, res, next) => {
 
     // Check if already exists
     const existing = await VipContact.findOne({
-      where: { user_id: req.userId, phone },
+      where: { userId: req.userId, phone },
     });
 
     if (existing) {
@@ -81,7 +81,7 @@ export const removeVip = async (req, res, next) => {
     const { id } = req.params;
 
     const contact = await VipContact.findOne({
-      where: { id, user_id: req.userId },
+      where: { id, userId: req.userId },
     });
 
     if (!contact) {

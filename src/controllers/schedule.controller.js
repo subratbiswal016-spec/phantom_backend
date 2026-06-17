@@ -4,7 +4,7 @@ import { Schedule } from '../models/index.js';
 export const getSchedules = async (req, res, next) => {
   try {
     const schedules = await Schedule.findAll({
-      where: { user_id: req.userId },
+      where: { userId: req.userId },
       order: [['created_at', 'DESC']],
     });
 
@@ -53,7 +53,7 @@ export const updateSchedule = async (req, res, next) => {
   try {
     const { id } = req.params;
     const schedule = await Schedule.findOne({
-      where: { id, user_id: req.userId },
+      where: { id, userId: req.userId },
     });
 
     if (!schedule) {
@@ -87,7 +87,7 @@ export const deleteSchedule = async (req, res, next) => {
   try {
     const { id } = req.params;
     const schedule = await Schedule.findOne({
-      where: { id, user_id: req.userId },
+      where: { id, userId: req.userId },
     });
 
     if (!schedule) {

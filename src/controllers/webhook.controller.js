@@ -37,16 +37,31 @@ export const handleIncomingCall = async (req, res, next) => {
       return res.type('text/xml').send(generateForwardTwiML(user.phone));
     }
 
-    // 3. Check if invisible mode is active
+    // 3. Check blocked call limits
+    const blockedCount = await CallLog.count({ where: { userId: user.id, status: 'blocked' } });
+    const hasReachedLimit = (user.plan === 'free' && blockedCount >= 20) || 
+                             (user.plan === 'basic' && blockedCount >= 100);
+
+    // 4. Check if invisible mode is active
     if (user.isInvisible) {
+      if (hasReachedLimit) {
+        console.log(`⚠️ User ${user.phone} reached plan blocked calls limit. Forwarding call.`);
+        await logCall(user.id, callerPhone, 'forwarded', callSid);
+        return res.type('text/xml').send(generateForwardTwiML(user.phone));
+      }
       // Non-VIP and Invisible Mode ON -> Block
       console.log(`🚫 Blocked call from ${callerPhone} (Invisible Mode)`);
       await logCall(user.id, callerPhone, 'blocked', callSid);
       return res.type('text/xml').send(generateRejectTwiML(user.customMessage));
     }
 
-    // 4. Invisible mode is OFF. Check if blockUnknown is ON.
+    // 5. Invisible mode is OFF. Check if blockUnknown is ON.
     if (user.blockUnknown) {
+      if (hasReachedLimit) {
+        console.log(`⚠️ User ${user.phone} reached plan blocked calls limit. Forwarding call.`);
+        await logCall(user.id, callerPhone, 'forwarded', callSid);
+        return res.type('text/xml').send(generateForwardTwiML(user.phone));
+      }
       const isKnownContact = await checkIsKnownContact(user.id, callerPhone);
       if (!isKnownContact) {
         console.log(`🚫 Blocked call from ${callerPhone} (Unknown Number)`);
@@ -99,7 +114,7 @@ async function checkIsVip(userId, callerPhone) {
 
   // Fallback: DB lookup
   const vip = await VipContact.findOne({
-    where: { user_id: userId, phone: normalizedPhone },
+    where: { userId, phone: normalizedPhone },
   });
 
   return !!vip;
